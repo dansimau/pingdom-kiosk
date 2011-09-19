@@ -1,0 +1,11 @@
+{
+	"pingdom": {
+		"accounts": [
+			{
+				"username": "",
+				"password": "",
+				"app_key": ""
+			}
+		]
+	}
+}
