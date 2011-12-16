@@ -1,0 +1,21 @@
+body {
+        font-family: "Lucida Sans";
+        text-align: center;
+	overflow: hidden;
+}
+
+h1 {
+	font-size: 50px;
+	line-height: 10px;
+	padding-top: 30px;
+}
+
+li {
+        list-style: none;
+        font-weight: bold;
+        padding-bottom: 50px;
+}
+
+.updated {
+	font-size: 25px;
+}
