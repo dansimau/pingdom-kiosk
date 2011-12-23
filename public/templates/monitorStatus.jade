@@ -1,0 +1,12 @@
+ul
+	li.head
+		| Checks
+	li
+		| #{checks.down} Down #{checks.acknowledged} Acknowledged #{checks.up} Up #{checks.total} Total
+	li.head
+		| Accounts
+	- each acc in accounts
+		-status = (acc.status) ? 'Ok' : 'Down';
+		-status = (acc.acknowledged) ? 'Acknowledged' : status;
+		li
+			| #{acc.username} - #{status}
