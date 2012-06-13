@@ -46,15 +46,6 @@ function Pingdom() {
 		});	
 	}
 	
-	this.playBeep = function(){
-		console.log('playbeep called - '+ new Date() );
-		if( self.beep ){
-			console.log('BBBEEEEEEPPPPP');
-			self.dom.audio.trigger('play');
-		}
-	}
-
-	
 	//render the status + list of down checks
 	this.render = function(){
 		console.log('Rendering Display');
@@ -144,9 +135,16 @@ function Pingdom() {
 		console.log('Monitor Status Update');
 		self.renderMonitorStatus(data);
 	});	
-	this.socket.on('beepSync', function(){
-		//beep every 30s if beep flag is set 
-		self.interval = setInterval(self.intervalString, 30000);
+
+	this.socket.once('beepSync', function(){
+		//beep every 30s if beep flag is set, synchronised across clients
+		console.log('syncing beep - '+ new Date());
+		self.interval = setInterval(function(){
+			if( self.beep ){
+				console.log('BBBEEEEEEPPPPP');
+				self.dom.audio.trigger('play');
+			}
+		}, 30000);
 	})
 	//this.updateChecks();
 };
@@ -162,7 +160,4 @@ function clone(obj) {
 var kiosk;
 $(document).ready(function(){
 	kiosk = new Pingdom();
-	//setInterval is awful so we have to do this with the actual variable name not self/this
-	kiosk.intervalString = 'kiosk.playBeep()';
-
 });
