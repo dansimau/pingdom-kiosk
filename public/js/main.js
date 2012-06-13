@@ -81,14 +81,12 @@ function Pingdom() {
 	this._renderUp = function(){
 		_self.dom.checkList.addClass('hide').children().remove();
 		_self.dom.body.addClass('up');
-		_self.dom.status.text('up');	
-		
+		_self.dom.status.text('ok');	
+		_self.beep = false;
 		if( _self.downChecks.length != 0 ){
 			_self.dom.checkList.removeClass('hide')
 			_self._renderList();
 		}
-
-		
 	}
 	this._renderDown = function(){
 		//ruh roh
@@ -131,12 +129,12 @@ function Pingdom() {
 	};
 	//event listeners
 	this.socket.on('statusChange', function(data){
+		console.log(data);
 		console.log('Status Change: '+data.id+' - '+data.hostname+' - '+data.status + ' - acknowledged: '+ data.acknowledged);
 		_self.updateChecks();
 	});	
 	this.socket.on('monitorStatus', function(data){
-		console.log('Monitor Status Update:');
-		console.log(data);
+		console.log('Monitor Status Update');
 		_self.renderMonitorStatus(data);
 	});	
 	
@@ -151,7 +149,7 @@ function clone(obj) {
 	}
 	return tmp;
 }
-
+var kiosk;
 $(document).ready(function(){
-	var kiosk = new Pingdom();
+	kiosk = new Pingdom();
 });

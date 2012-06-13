@@ -1,8 +1,13 @@
 ul
 	li.head
 		| Checks
-	li
-		| #{checks.down} Down #{checks.acknowledged} Acknowledged #{checks.up} Up #{checks.total} Total
+	li.
+		#{checks.down} Down | 
+		#{checks.unconfirmed} Unconfirmed  |
+		#{checks.acknowledged} Acknowledged | 
+		#{checks.up} Up | 
+		#{checks.paused} Paused | 
+		#{checks.total} Total
 	li.head
 		| Accounts
 	- each acc in accounts

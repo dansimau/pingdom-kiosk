@@ -3,7 +3,8 @@ var express = require('express'),
 
 var pingdom = require("./lib/pingdom.js");
 var config = require("./lib/config.js");
-var tpl = require('./lib/templates.js');
+var templates = require('./lib/templates.js');
+var tpl = templates.watch(__dirname+'/public/templates/');
 
 // Read config from file
 var conf = config.parseJsonFromFileSync(__dirname + '/kiosk-server.conf');
@@ -16,7 +17,7 @@ if (!conf) {
 var api = conf.pingdom.apiserver || {
 	"host": "api.pingdom.com",
 	"port": "443",
-	"protocol": "http",
+	"protocol": "https",
 	"pollfreq": ""
 };
 
@@ -38,9 +39,9 @@ var app = module.exports = express.createServer();
 
 //configure express
 app.configure(function(){
+	app.use(express.static(__dirname + '/public'));
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
-	app.use(express.session({secret:'asdfasdfasdfdghjfkkj'}));  
 	app.use(express.methodOverride());
 	app.use(app.router);
 	app.set("view options", {layout: false});
