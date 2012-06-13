@@ -4,7 +4,7 @@ function Pingdom() {
 	var self = this;
 	this.downChecks = [];	
 	this.beep = false;
-	this.interval;
+	this.interval = 0;
 	//templates are bootstrapped into the initial html
 	this.templates = templates;
 	
@@ -32,6 +32,19 @@ function Pingdom() {
 	this.socket.on('connect', function(){
 		console.log('Connected');
 		self.dom.body.removeClass('disconnected');
+
+		//resync
+		self.socket.once('beepSync', function(interval){
+			if( self.interval != 0 ){ clearInterval(self.interval); }
+			//beep every 30s if beep flag is set, synchronised across clients
+			console.log('syncing beep - '+ new Date());
+			self.interval = setInterval(function(){
+				if( self.beep ){
+					console.log('BBBEEEEEEPPPPP');
+					self.dom.audio.trigger('play');
+				}
+			}, interval);
+		});		
 		
 		//refresh when we (re)connect
 		self.updateChecks();
@@ -87,7 +100,9 @@ function Pingdom() {
 		self.dom.body.addClass('down');
 		var text = [];
 		for (var i = 0; i < self.downChecks.length; i++) {
-			text.push(self.downChecks[i].name);
+			if( !self.downChecks[i].acknowledged ){
+				text.push(self.downChecks[i].name);
+			}
 		}
 		self.dom.status.html( text.join('<br/>') );
 		self.dom.checkList.removeClass('hide').children().remove();
@@ -136,16 +151,7 @@ function Pingdom() {
 		self.renderMonitorStatus(data);
 	});	
 
-	this.socket.once('beepSync', function(){
-		//beep every 30s if beep flag is set, synchronised across clients
-		console.log('syncing beep - '+ new Date());
-		self.interval = setInterval(function(){
-			if( self.beep ){
-				console.log('BBBEEEEEEPPPPP');
-				self.dom.audio.trigger('play');
-			}
-		}, 30000);
-	})
+
 	//this.updateChecks();
 };
 
