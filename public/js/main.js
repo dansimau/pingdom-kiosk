@@ -19,6 +19,7 @@ function Pingdom() {
 	this.dom.audio 			= $('<audio src="/beep.wav" preload />').appendTo(this.dom.app);
 	
 	
+
 	//connect websockets
 	this.socket = io.connect();
 	
@@ -46,8 +47,8 @@ function Pingdom() {
 	}
 	
 	this.playBeep = function(){
-		console.log('playbeep called');
-		if( self.beep){
+		console.log('playbeep called - '+ new Date() );
+		if( self.beep ){
 			console.log('BBBEEEEEEPPPPP');
 			self.dom.audio.trigger('play');
 		}
@@ -83,7 +84,7 @@ function Pingdom() {
 		self.dom.body.addClass('up');
 		self.dom.status.text('ok');	
 		self.beep = false;
-		clearInterval(self.interval);
+		//clearInterval(self.interval);
 
 		if( self.downChecks.length != 0 ){
 			self.dom.checkList.removeClass('hide')
@@ -100,9 +101,7 @@ function Pingdom() {
 		self.dom.status.html( text.join('<br/>') );
 		self.dom.checkList.removeClass('hide').children().remove();
 		self._renderList();
-		//BEEPY TIME
-		//beep every 30s if beep flag is set
-		self.interval = setInterval(self.playBeep(), 30000);
+		//BEEPY TIME		
 		self.beep = true;
 
 	}
@@ -145,7 +144,10 @@ function Pingdom() {
 		console.log('Monitor Status Update');
 		self.renderMonitorStatus(data);
 	});	
-	
+	this.socket.on('beepSync', function(){
+		//beep every 30s if beep flag is set 
+		self.interval = setInterval(self.intervalString, 30000);
+	})
 	//this.updateChecks();
 };
 
@@ -160,4 +162,7 @@ function clone(obj) {
 var kiosk;
 $(document).ready(function(){
 	kiosk = new Pingdom();
+	//setInterval is awful so we have to do this with the actual variable name not self/this
+	kiosk.intervalString = 'kiosk.playBeep()';
+
 });

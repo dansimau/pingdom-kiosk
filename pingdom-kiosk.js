@@ -123,6 +123,10 @@ io.sockets.on('connection', function (socket) {
 	});
 });
 
+function beepSync(){
+	io.sockets.emit('beepSync');
+}
+setInterval('beepSync');
 //start webserver
 app.listen(3000);
 
