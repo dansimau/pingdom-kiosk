@@ -1,9 +1,10 @@
 
 function Pingdom() {
 	//woop woop lets do this
-	var _self = this;
+	var self = this;
 	this.downChecks = [];	
 	this.beep = false;
+	this.interval;
 	//templates are bootstrapped into the initial html
 	this.templates = templates;
 	
@@ -22,120 +23,127 @@ function Pingdom() {
 	this.socket = io.connect();
 	
 	this.socket.on('disconnect', function(){
-		_self.dom.status.text('Connection Lost');
-		_self.dom.body.addClass('disconnected');
-		_self.dom.monitorStatus.children().remove();
-		_self.dom.checkList.children().remove();
+		self.dom.status.text('Connection Lost');
+		self.dom.body.addClass('disconnected');
+		self.dom.monitorStatus.children().remove();
+		self.dom.checkList.children().remove();
 	});
 	this.socket.on('connect', function(){
 		console.log('Connected');
-		_self.dom.body.removeClass('disconnected');
+		self.dom.body.removeClass('disconnected');
 		
 		//refresh when we (re)connect
-		_self.updateChecks();
+		self.updateChecks();
 	});	
 	
 	//guess what this does!
 	this.updateChecks = function(){
 		console.log('Getting Updated Checks');
-		_self.socket.emit('getDownStates', {}, function(data) {
-			_self.downChecks = data;
-			_self.render();
+		self.socket.emit('getDownStates', {}, function(data) {
+			self.downChecks = data;
+			self.render();
 		});	
 	}
 	
 	this.playBeep = function(){
-		if( _self.beep){
+		console.log('playbeep called');
+		if( self.beep){
 			console.log('BBBEEEEEEPPPPP');
-			_self.dom.audio.trigger('play');
+			self.dom.audio.trigger('play');
 		}
 	}
-	//beep every 30s if beep flag is set
-	//TODO sync this time with server so you dont get out of sync beeping?
-	setInterval(_self.playBeep(), 30000);
+
 	
 	//render the status + list of down checks
 	this.render = function(){
 		console.log('Rendering Display');
-		//console.log(_self.downChecks)
+		//console.log(self.downChecks)
 		
-		_self.dom.body.removeClass('up down');
-		if( _self.downChecks.length == 0 ){
+		self.dom.body.removeClass('up down');
+		if( self.downChecks.length == 0 ){
 			//nothing is down :woop-woop:
-			_self._renderUp();
+			self._renderUp();
 		}else{
 			//check if all the downchecks have been acknowledged
 			var down = false;
-			for (var i = 0, l = _self.downChecks.length; i < l; i++) {
-				if( _self.downChecks[i].acknowledged == false){
+			for (var i = 0, l = self.downChecks.length; i < l; i++) {
+				if( self.downChecks[i].acknowledged == false){
 					down = true;
 				}
 			}
 			if( down ){
-				_self._renderDown();
+				self._renderDown();
 			}else{
-				_self._renderUp();
+				self._renderUp();
 			}
 		}
 	}
 	this._renderUp = function(){
-		_self.dom.checkList.addClass('hide').children().remove();
-		_self.dom.body.addClass('up');
-		_self.dom.status.text('ok');	
-		_self.beep = false;
-		if( _self.downChecks.length != 0 ){
-			_self.dom.checkList.removeClass('hide')
-			_self._renderList();
+		self.dom.checkList.addClass('hide').children().remove();
+		self.dom.body.addClass('up');
+		self.dom.status.text('ok');	
+		self.beep = false;
+		clearInterval(self.interval);
+
+		if( self.downChecks.length != 0 ){
+			self.dom.checkList.removeClass('hide')
+			self._renderList();
 		}
 	}
 	this._renderDown = function(){
 		//ruh roh
-		_self.dom.body.addClass('down');
-		_self.dom.status.text('down');
-		_self.dom.checkList.removeClass('hide').children().remove();
-		_self._renderList();
+		self.dom.body.addClass('down');
+		var text = [];
+		for (var i = 0; i < self.downChecks.length; i++) {
+			text.push(self.downChecks[i].name);
+		}
+		self.dom.status.html( text.join('<br/>') );
+		self.dom.checkList.removeClass('hide').children().remove();
+		self._renderList();
 		//BEEPY TIME
-		_self.beep = true;
-		_self.playBeep();			
+		self.beep = true;
+		//beep every 30s if beep flag is set
+		self.interval = setInterval(self.playBeep(), 30000);
+
 	}
 	this._renderList = function(){
 		console.log('rendering list');
-		for (var i = 0, l = _self.downChecks.length; i < l; i++) {
+		for (var i = 0, l = self.downChecks.length; i < l; i++) {
 			var li = $('<li/>');
 			
 			//render each list element from jade template
-			var locals = clone(_self.downChecks[i]);
+			var locals = clone(self.downChecks[i]);
 			locals.status = ( locals.acknowledged ) ? 'acknowledged':locals.status;
-			var a = $( _self.templates.list(locals) ).appendTo(li);
+			var a = $( self.templates.list(locals) ).appendTo(li);
 			//set acknowledge click event
 			a.click(function(e){
 					e.preventDefault();
-					_self.acknowledge( $(this).attr('id') );
+					self.acknowledge( $(this).attr('id') );
 				});
-			li.appendTo(_self.dom.checkList);
+			li.appendTo(self.dom.checkList);
 		}	
 		
 	}
 	
 	this.renderMonitorStatus = function(status){
 		console.log('Rendering Monitor Status');
-		_self.dom.monitorStatus.children().remove();
+		self.dom.monitorStatus.children().remove();
 		//render from template		
-		_self.dom.monitorStatus.append( _self.templates.monitorStatus(status) );
+		self.dom.monitorStatus.append( self.templates.monitorStatus(status) );
 	}
 	this.acknowledge = function(id){
 		console.log('Acknowledging '+id);
-		_self.socket.emit('acknowledge', id);
+		self.socket.emit('acknowledge', id);
 	};
 	//event listeners
 	this.socket.on('statusChange', function(data){
 		console.log(data);
 		console.log('Status Change: '+data.id+' - '+data.hostname+' - '+data.status + ' - acknowledged: '+ data.acknowledged);
-		_self.updateChecks();
+		self.updateChecks();
 	});	
 	this.socket.on('monitorStatus', function(data){
 		console.log('Monitor Status Update');
-		_self.renderMonitorStatus(data);
+		self.renderMonitorStatus(data);
 	});	
 	
 	this.updateChecks();
