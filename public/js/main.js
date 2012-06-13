@@ -101,9 +101,9 @@ function Pingdom() {
 		self.dom.checkList.removeClass('hide').children().remove();
 		self._renderList();
 		//BEEPY TIME
-		self.beep = true;
 		//beep every 30s if beep flag is set
 		self.interval = setInterval(self.playBeep(), 30000);
+		self.beep = true;
 
 	}
 	this._renderList = function(){
@@ -146,7 +146,7 @@ function Pingdom() {
 		self.renderMonitorStatus(data);
 	});	
 	
-	this.updateChecks();
+	//this.updateChecks();
 };
 
 //copy an object

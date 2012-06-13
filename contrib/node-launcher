@@ -1,0 +1,98 @@
+#!/bin/bash
+#
+# Daemoniser:  starts a program as a daemon and relaunches it if it exits. Adds a pidfile and
+# logfile capabilities.
+#
+# dsimmons@squiz.co.uk
+# 2011-10-28
+#
+
+usage()
+{
+	echo "Usage: $0 [--pidfile=<path>] [--logfile=<path>] <program> [args]" >&2
+}
+
+log()
+{
+	fd=${2-1}
+	echo "[$(date +%c) - ${0##*/}]: $*" >&$fd
+}
+
+signal_handler()
+{
+	log "Received signal, killing $daemon_bin pid $daemon_pid"
+	kill $daemon_pid
+}
+
+while [ "$1" != "${1##-}" ]; do
+	case $1 in
+		--no-detach)
+			foreground=true
+			shift
+			;;
+
+		--pidfile=?*)
+			pidfile=${1#--pidfile=}
+			shift
+			;;
+
+		--logfile=?*)
+			logfile=${1#--logfile=}
+			shift
+			;;
+		*)
+			usage
+			exit 99
+			;;
+	esac
+done
+
+daemon_bin="$*"
+
+if [ -z "$daemon_bin" ]; then
+	usage
+	exit 99
+fi
+
+# Spawn daemon process and exit
+if [ ! $foreground ]; then
+	args="--no-detach"
+	[ -n "$logfile" ] && args="$args --logfile=$logfile"
+	[ -n "$pidfile" ] && args="$args --pidfile=$pidfile"
+	$0 $args $* &
+	exit
+fi
+
+# Direct all output to logfile if one has been specified
+if [ -n "$logfile" ]; then
+	exec 3>>$logfile
+	logfd=3
+else
+	logfd=-
+fi
+
+# Close stdin and redirect or close other fds
+exec <&-
+exec 1>&$logfd
+exec 2>&$logfd
+
+# Set signal handler to clean up the child program on exit (or HUP)
+trap signal_handler SIGHUP EXIT
+
+# Write pid if a pidfile has been specified
+[ -n "$pidfile" ] && echo $$>$pidfile
+
+while true; do
+
+	log "Launching $daemon_bin"
+	$daemon_bin &
+	daemon_pid=$!
+
+	log "PID is $daemon_pid"
+	wait $daemon_pid
+
+	log "$daemon_bin exited"
+	sleep 2
+
+done
+
