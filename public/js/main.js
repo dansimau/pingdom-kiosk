@@ -30,17 +30,17 @@ function Pingdom() {
 		self.dom.checkList.children().remove();
 	});
 	this.socket.on('connect', function(){
-		console.log('Connected');
+		log('Connected');
 		self.dom.body.removeClass('disconnected');
 
 		//resync
 		self.socket.once('beepSync', function(interval){
 			if( self.interval != 0 ){ clearInterval(self.interval); }
 			//beep every 30s if beep flag is set, synchronised across clients
-			console.log('syncing beep - '+ new Date());
+			log('syncing beep at '+ new Date() +' beeping every '+interval+' seconds');
 			self.interval = setInterval(function(){
 				if( self.beep ){
-					console.log('BBBEEEEEEPPPPP');
+					log('BBBEEEEEEPPPPP');
 					self.dom.audio.trigger('play');
 				}
 			}, interval);
@@ -52,7 +52,7 @@ function Pingdom() {
 	
 	//guess what this does!
 	this.updateChecks = function(){
-		console.log('Getting Updated Checks');
+		log('Getting Updated Checks');
 		self.socket.emit('getDownStates', {}, function(data) {
 			self.downChecks = data;
 			self.render();
@@ -61,8 +61,8 @@ function Pingdom() {
 	
 	//render the status + list of down checks
 	this.render = function(){
-		console.log('Rendering Display');
-		//console.log(self.downChecks)
+		log('Rendering Display');
+		//log(self.downChecks)
 		
 		self.dom.body.removeClass('up down');
 		if( self.downChecks.length == 0 ){
@@ -112,7 +112,7 @@ function Pingdom() {
 
 	}
 	this._renderList = function(){
-		console.log('rendering list');
+		log('rendering list');
 		for (var i = 0, l = self.downChecks.length; i < l; i++) {
 			var li = $('<li/>');
 			
@@ -131,23 +131,23 @@ function Pingdom() {
 	}
 	
 	this.renderMonitorStatus = function(status){
-		console.log('Rendering Monitor Status');
+		log('Rendering Monitor Status');
 		self.dom.monitorStatus.children().remove();
 		//render from template		
 		self.dom.monitorStatus.append( self.templates.monitorStatus(status) );
 	}
 	this.acknowledge = function(id){
-		console.log('Acknowledging '+id);
+		log('Acknowledging '+id);
 		self.socket.emit('acknowledge', id);
 	};
 	//event listeners
 	this.socket.on('statusChange', function(data){
-		console.log(data);
-		console.log('Status Change: '+data.id+' - '+data.hostname+' - '+data.status + ' - acknowledged: '+ data.acknowledged);
+		log(data);
+		log('Status Change: '+data.id+' - '+data.hostname+' - '+data.status + ' - acknowledged: '+ data.acknowledged);
 		self.updateChecks();
 	});	
 	this.socket.on('monitorStatus', function(data){
-		console.log('Monitor Status Update');
+		log('Monitor Status Update');
 		self.renderMonitorStatus(data);
 	});	
 
@@ -163,7 +163,15 @@ function clone(obj) {
 	}
 	return tmp;
 }
+
+function log(d){
+	debug = debug || false;
+	if( debug && typeof(console) == 'object'  ){
+		console.log(d);
+	}
+}
 var kiosk;
+var debug = true;
 $(document).ready(function(){
 	kiosk = new Pingdom();
 });

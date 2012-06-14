@@ -64,7 +64,7 @@ strong { font-weight: bold;}
 body {  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;}
 
 a {color: #00A08A; text-decoration: none;}
-a:hover{ color: 34D0BA;}
+a:hover{ color: #34D0BA;}
 
 /*app styles */
 div#app { margin-top: 20px; height: 100%; width: 100%;}
