@@ -5,7 +5,9 @@
 				"name":"",
 				"username": "",
 				"password": "",
-				"app_key": ""
+				"app_key": "",
+				"include": [],
+				"exclude": []
 			}
 		]
 	}
