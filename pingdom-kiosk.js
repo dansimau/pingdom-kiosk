@@ -54,7 +54,7 @@ app.configure('development', function(){
 // render the initial page
 // write templates directly into a <script> tag
 app.get('/', function(req, res){
-	res.render('index.jade', { templates: tpl.writeTemplates() });
+	res.render(__dirname + '/views/index.jade', { templates: tpl.writeTemplates() });
 });
 
 //websockets (fuckyeah)
