@@ -106,11 +106,34 @@ io.sockets.on('connection', function (socket) {
 			}, 'up');
 	});
 	
-	//return all checks
+	//return checks
 	socket.on('getStates', function(data, fn){
-		monitor.getChecks(function(states){
-				fn(states)
-			}, 'all');
+		if( typeof(data) == 'string' ){
+			monitor.getChecks(data, fn);
+		}else{
+			//loop over requested check types and asynchronously get them
+			var i = 0;
+			var length = data.length;
+			var ret = {};
+			function count(){
+				i++;
+				if( i == length){
+					fn(ret);
+				}
+			}
+			function doStuff(type){
+				monitor.getChecks(type, function(checks){
+					ret[type] = checks;
+					count();
+				});				
+			}
+			for (var j = 0; j < data.length; j++) {
+				ret[data[j]] = [];
+				doStuff(data[j]);
+			}
+
+		}
+		
 	});
 	
 	//acknowledge a downcheck

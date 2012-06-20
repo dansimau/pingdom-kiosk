@@ -69,7 +69,7 @@ a:hover{ color: #34D0BA;}
 /*app styles */
 div#app { margin-top: 20px; height: 100%; width: 100%;}
 div#app h1 { margin-bottom: 0.5em; font-weight: bold; font-size: 2em;}
-div#app h1#status { margin: auto; font-weight: bold; font-size: 8em; text-align: center; }
+div#app h1#status { margin: auto; font-weight: bold; font-size: 12em; text-align: center; }
 
 .down{ background-color: #BF3030;}
 .ignored{ background-color: yellow;}
@@ -80,7 +80,7 @@ span.label{ width: 125px; float: left; font-weight: bold; padding-right: 5px;}
 /* check list styles */
 ul#checkList { list-style-type: none; margin: auto; padding: 10px; }
 ul#checkList li a{ padding: 3px; border-bottom: 2px solid black; color: black; display: block;}
-ul#checkList li span.state  { width: 130px; }
+ul#checkList li span.state  { width: 170px; }
 ul#checkList li a.acknowledged { background-color: yellow;}
 ul#checkList li a.up { background-color: transparent; border-bottom-color: #5F9900;}
 ul#checkList li a.down {font-weight: bold; font-size: 105%;}

@@ -2,7 +2,8 @@
 function Pingdom() {
 	//woop woop lets do this
 	var self = this;
-	this.downChecks = [];	
+	this.downChecks = [];
+	self.acknowledgedChecks = [];
 	this.beep = false;
 	this.interval = 0;
 	//templates are bootstrapped into the initial html
@@ -12,10 +13,10 @@ function Pingdom() {
 	$('body').text('').html('');
 	this.dom = {};
 	this.dom.body 			= $('body');
-	this.dom.app 			= $('<div id="app"/>').appendTo('body');		
+	this.dom.app 			= $('<div id="app"/>').appendTo('body');
 	this.dom.status 		= $('<h1 id="status" class="uppercase"/>').appendTo(this.dom.app);
 	this.dom.checkList 		= $('<ul id="checkList" class="hide"/>').appendTo(this.dom.app);
-	this.dom.monitorStatus 	= $('<div id="monitorStatus"/>').appendTo(this.dom.app);		
+	this.dom.monitorStatus 	= $('<div id="monitorStatus"/>').appendTo(this.dom.app);
 	this.dom.audio 			= $('<audio src="/beep.wav" preload />').appendTo(this.dom.app);
 	
 	
@@ -37,7 +38,7 @@ function Pingdom() {
 		self.socket.once('beepSync', function(interval){
 			if( self.interval != 0 ){ clearInterval(self.interval); }
 			//beep every 30s if beep flag is set, synchronised across clients
-			log('syncing beep at '+ new Date() +' beeping every '+interval+' seconds');
+			log('syncing beep at '+ new Date() +' beeping every '+( interval / 1000 )+' seconds');
 			self.interval = setInterval(function(){
 				if( self.beep ){
 					log('BBBEEEEEEPPPPP');
@@ -53,8 +54,9 @@ function Pingdom() {
 	//guess what this does!
 	this.updateChecks = function(){
 		log('Getting Updated Checks');
-		self.socket.emit('getDownStates', {}, function(data) {
-			self.downChecks = data;
+		self.socket.emit('getStates', ['down','acknowledged'], function(data) {
+			self.downChecks = data.down;
+			self.acknowledgedChecks = data.acknowledged;
 			self.render();
 		});	
 	}
@@ -90,7 +92,7 @@ function Pingdom() {
 		self.beep = false;
 		//clearInterval(self.interval);
 
-		if( self.downChecks.length != 0 ){
+		if( self.downChecks.length != 0 || self.acknowledgedChecks != 0 ){
 			self.dom.checkList.removeClass('hide')
 			self._renderList();
 		}
@@ -114,20 +116,31 @@ function Pingdom() {
 	this._renderList = function(){
 		log('rendering list');
 		for (var i = 0, l = self.downChecks.length; i < l; i++) {
-			var li = $('<li/>');
-			
-			//render each list element from jade template
-			var locals = clone(self.downChecks[i]);
-			locals.status = ( locals.acknowledged ) ? 'acknowledged':locals.status;
-			var a = $( self.templates.list(locals) ).appendTo(li);
-			//set acknowledge click event
-			a.click(function(e){
-					e.preventDefault();
-					self.acknowledge( $(this).attr('id') );
-				});
-			li.appendTo(self.dom.checkList);
-		}	
+			//unacknowledged checks only
+			if( self.downChecks[i].acknowledged ){
+				continue;
+			}
+			self._renderListCheck(self.downChecks[i]).appendTo(self.dom.checkList);
+		}
+		for (var i = 0, l = self.acknowledgedChecks.length; i < l; i++) {
+			self._renderListCheck(self.acknowledgedChecks[i]).appendTo(self.dom.checkList);
+		}			
 		
+	}
+	this._renderListCheck = function(check){
+		var li = $('<li/>');
+		
+		//render each list element from jade template
+		var locals = clone(check);
+		locals.statusClass = ( locals.acknowledged ) ? 'acknowledged':locals.status;
+		locals.status = ( locals.acknowledged ) ? 'Acknowledged '+locals.status:locals.status;
+		var a = $( self.templates.list(locals) ).appendTo(li);
+		//set acknowledge click event
+		a.click(function(e){
+				e.preventDefault();
+				self.acknowledge( $(this).attr('id') );
+			});	
+		return li;
 	}
 	
 	this.renderMonitorStatus = function(status){
@@ -164,10 +177,17 @@ function clone(obj) {
 	return tmp;
 }
 
-function log(d){
+function log(msg){
 	debug = debug || false;
 	if( debug && typeof(console) == 'object'  ){
-		console.log(d);
+		if( typeof(msg) == 'string' ){
+			var d = new Date();
+			var timestamp = d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+			console.log(timestamp+' - '+msg);
+		}else{
+			console.log(msg);
+		}
+		
 	}
 }
 var kiosk;
