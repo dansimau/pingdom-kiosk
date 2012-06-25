@@ -19,7 +19,8 @@ function Pingdom() {
 	this.dom.monitorStatus 	= $('<div id="monitorStatus"/>').appendTo(this.dom.app);
 	this.dom.audio 			= $('<audio src="/beep.wav" preload />').appendTo(this.dom.app);
 	
-	
+	this.maxFont = this.dom.status.css('font-size').match(/([0-9]+)px/)[1];
+	this.minFont = 60;
 
 	//connect websockets
 	this.socket = io.connect();
@@ -84,6 +85,7 @@ function Pingdom() {
 				self._renderUp();
 			}
 		}
+		self.adjustSize();
 	}
 	this._renderUp = function(){
 		self.dom.checkList.addClass('hide').children().remove();
@@ -109,8 +111,47 @@ function Pingdom() {
 		self.dom.status.html( text.join('<br/>') );
 		self.dom.checkList.removeClass('hide').children().remove();
 		self._renderList();
-		//BEEPY TIME		
+		//BEEPY TIME
 		self.beep = true;
+
+	}
+	this.adjustSize = function(){
+		var avail = $(window).height();
+		var tot = self.dom.checkList.height() + self.dom.monitorStatus.height();
+		var max = avail - tot - 100;
+		var fontStep = 10;
+		log('Resizing');
+
+		//set height to whatever
+		self.dom.status.height('');
+		var brk = false;
+		var n = 0;
+		if( self.dom.status.prop('clientHeight') > max){
+			//too big, resize until it fits!
+			while( self.dom.status.prop('clientHeight') >  max && !brk ){
+				n++;
+				var fontsize = parseInt( self.dom.status.css('font-size').match(/([0-9]+)px/)[1] );
+				if( fontsize < self.minFont || n > 50 ){
+					log('Min font reached or loop out of control!');
+					fontsize += (fontStep*2);
+					brk = true;
+				}
+				self.dom.status.css('font-size', fontsize - fontStep +'px' );
+			}
+		}else{
+			while( self.dom.status.prop('clientHeight') < max && !brk ){
+				n++;
+				var fontsize = parseInt( self.dom.status.css('font-size').match(/([0-9]+)px/)[1] );
+				if( fontsize > self.maxFont || n > 50 ){
+					log('Max font reached or loop out of control!');
+					fontsize -= (fontStep*2); 
+					brk = true;
+				}
+				self.dom.status.css('font-size', fontsize + fontStep +'px' );
+			}
+		}
+		//fix height, overflow is set to hide anything that pushes over
+		self.dom.status.height(max);
 
 	}
 	this._renderList = function(){
@@ -155,7 +196,6 @@ function Pingdom() {
 	};
 	//event listeners
 	this.socket.on('statusChange', function(data){
-		log(data);
 		log('Status Change: '+data.id+' - '+data.hostname+' - '+data.status + ' - acknowledged: '+ data.acknowledged);
 		self.updateChecks();
 	});	
@@ -164,8 +204,8 @@ function Pingdom() {
 		self.renderMonitorStatus(data);
 	});	
 
-
-	//this.updateChecks();
+	//adjust status text size on window resize
+	$(window).resize(self.adjustSize);
 };
 
 //copy an object
