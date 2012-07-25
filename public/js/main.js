@@ -43,7 +43,7 @@ function Pingdom() {
 			self.interval = setInterval(function(){
 				if( self.beep ){
 					log('BBBEEEEEEPPPPP');
-					//self.dom.audio.trigger('play');
+					self.dom.audio.trigger('play');
 				}
 			}, interval);
 		});
