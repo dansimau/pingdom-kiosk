@@ -27,7 +27,7 @@ for (var i = 0, l = conf.pingdom.accounts.length; i < l; i++) {
 	conf.pingdom.accounts[i]["host"] = api.host;
 	conf.pingdom.accounts[i]["port"] = api.port;
 	conf.pingdom.accounts[i]["protocol"] = api.protocol;
-	conf.pingdom.accounts[i]["pollfreq"] = api.pollfreq;	
+	conf.pingdom.accounts[i]["pollfreq"] = api.pollfreq;
 	connectors.push(pingdom.createConnector(conf.pingdom.accounts[i]));
 }
 
@@ -47,7 +47,7 @@ app.configure(function(){
 	app.set("view options", {layout: false});
 });
 app.configure('development', function(){
-	app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 	app.use(express.static(__dirname + '/public'));
 });
 
@@ -95,14 +95,14 @@ io.sockets.on('connection', function (socket) {
 	//return downstates
 	socket.on('getDownStates', function(data, fn){
 		monitor.getChecks(function(states){
-				fn(states)
+				fn(states);
 			}, 'down');
 	});
 
 	//return upstates
 	socket.on('getUpStates', function(data, fn){
 		monitor.getChecks(function(states){
-				fn(states)
+				fn(states);
 			}, 'up');
 	});
 	
@@ -110,30 +110,28 @@ io.sockets.on('connection', function (socket) {
 	socket.on('getStates', function(data, fn){
 		if( typeof(data) == 'string' ){
 			monitor.getChecks(data, fn);
-		}else{
-			//loop over requested check types and asynchronously get them
-			var i = 0;
-			var length = data.length;
-			var ret = {};
-			function count(){
-				i++;
-				if( i == length){
-					fn(ret);
-				}
-			}
-			function doStuff(type){
-				monitor.getChecks(type, function(checks){
-					ret[type] = checks;
-					count();
-				});				
-			}
-			for (var j = 0; j < data.length; j++) {
-				ret[data[j]] = [];
-				doStuff(data[j]);
-			}
-
+			return;
 		}
-		
+		//loop over requested check types and asynchronously get them
+		var i = 0;
+		var length = data.length;
+		var ret = {};
+		function count(){
+			i++;
+			if( i == length){
+				fn(ret);
+			}
+		}
+		function doStuff(type){
+			monitor.getChecks(type, function(checks){
+				ret[type] = checks;
+				count();
+			});
+		}
+		for (var j = 0; j < data.length; j++) {
+			ret[data[j]] = [];
+			doStuff(data[j]);
+		}
 	});
 	
 	//acknowledge a downcheck

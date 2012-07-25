@@ -37,20 +37,20 @@ function Pingdom() {
 
 		//resync
 		self.socket.once('beepSync', function(interval){
-			if( self.interval != 0 ){ clearInterval(self.interval); }
+			if( self.interval !== 0 ){ clearInterval(self.interval); }
 			//beep every 30s if beep flag is set, synchronised across clients
 			log('syncing beep at '+ new Date() +' beeping every '+( interval / 1000 )+' seconds');
 			self.interval = setInterval(function(){
 				if( self.beep ){
 					log('BBBEEEEEEPPPPP');
-					self.dom.audio.trigger('play');
+					//self.dom.audio.trigger('play');
 				}
 			}, interval);
-		});		
+		});
 		
 		//refresh when we (re)connect
 		self.updateChecks();
-	});	
+	});
 	
 	//guess what this does!
 	this.updateChecks = function(){
@@ -59,8 +59,8 @@ function Pingdom() {
 			self.downChecks = data.down;
 			self.acknowledgedChecks = data.acknowledged;
 			self.render();
-		});	
-	}
+		});
+	};
 	
 	//render the status + list of down checks
 	this.render = function(){
@@ -68,14 +68,14 @@ function Pingdom() {
 		//log(self.downChecks)
 		
 		self.dom.body.removeClass('up down');
-		if( self.downChecks.length == 0 ){
+		if( self.downChecks.length === 0 ){
 			//nothing is down :woop-woop:
 			self._renderUp();
 		}else{
 			//check if all the downchecks have been acknowledged
 			var down = false;
 			for (var i = 0, l = self.downChecks.length; i < l; i++) {
-				if( self.downChecks[i].acknowledged == false){
+				if( self.downChecks[i].acknowledged === false){
 					down = true;
 				}
 			}
@@ -86,19 +86,18 @@ function Pingdom() {
 			}
 		}
 		self.adjustSize();
-	}
+	};
 	this._renderUp = function(){
 		self.dom.checkList.addClass('hide').children().remove();
 		self.dom.body.addClass('up');
-		self.dom.status.text('ok');	
+		self.dom.status.text('ok');
 		self.beep = false;
-		//clearInterval(self.interval);
 
-		if( self.downChecks.length != 0 || self.acknowledgedChecks != 0 ){
-			self.dom.checkList.removeClass('hide')
+		if( self.downChecks.length !== 0 || self.acknowledgedChecks !== 0 ){
+			self.dom.checkList.removeClass('hide');
 			self._renderList();
 		}
-	}
+	};
 	this._renderDown = function(){
 		//ruh roh
 		self.dom.body.addClass('down');
@@ -114,12 +113,13 @@ function Pingdom() {
 		//BEEPY TIME
 		self.beep = true;
 
-	}
+	};
 	this.adjustSize = function(){
 		var avail = $(window).height();
 		var tot = self.dom.checkList.height() + self.dom.monitorStatus.height();
 		var max = avail - tot - 100;
 		var fontStep = 10;
+		var fontSize;
 		log('Resizing');
 
 		//set height to whatever
@@ -130,7 +130,7 @@ function Pingdom() {
 			//too big, resize until it fits!
 			while( self.dom.status.prop('clientHeight') >  max && !brk ){
 				n++;
-				var fontsize = parseInt( self.dom.status.css('font-size').match(/([0-9]+)px/)[1] );
+				fontsize = parseInt( self.dom.status.css('font-size').match(/([0-9]+)px/)[1], 10 );
 				if( fontsize < self.minFont || n > 50 ){
 					log('Min font reached or loop out of control!');
 					fontsize += (fontStep*2);
@@ -141,10 +141,10 @@ function Pingdom() {
 		}else{
 			while( self.dom.status.prop('clientHeight') < max && !brk ){
 				n++;
-				var fontsize = parseInt( self.dom.status.css('font-size').match(/([0-9]+)px/)[1] );
+				fontsize = parseInt( self.dom.status.css('font-size').match(/([0-9]+)px/)[1], 10 );
 				if( fontsize > self.maxFont || n > 50 ){
 					log('Max font reached or loop out of control!');
-					fontsize -= (fontStep*2); 
+					fontsize -= (fontStep*2);
 					brk = true;
 				}
 				self.dom.status.css('font-size', fontsize + fontStep +'px' );
@@ -153,43 +153,65 @@ function Pingdom() {
 		//fix height, overflow is set to hide anything that pushes over
 		self.dom.status.height(max);
 
-	}
+	};
 	this._renderList = function(){
 		log('rendering list');
-		for (var i = 0, l = self.downChecks.length; i < l; i++) {
+		var i;
+		for (i = 0, l = self.downChecks.length; i < l; i++) {
 			//unacknowledged checks only
 			if( self.downChecks[i].acknowledged ){
 				continue;
 			}
 			self._renderListCheck(self.downChecks[i]).appendTo(self.dom.checkList);
 		}
-		for (var i = 0, l = self.acknowledgedChecks.length; i < l; i++) {
+		for (i = 0, l = self.acknowledgedChecks.length; i < l; i++) {
 			self._renderListCheck(self.acknowledgedChecks[i]).appendTo(self.dom.checkList);
-		}			
+		}
 		
-	}
+	};
 	this._renderListCheck = function(check){
 		var li = $('<li/>');
 		
 		//render each list element from jade template
 		var locals = clone(check);
+
+		//ghetto downtime counter
+		if ( locals.status == 'down') {
+			//calculate time check has been down for
+			var t = timeFormat(new Date().getTime() - (locals.laststatuschange*1000) );
+			locals.name += ' '+locals.status+' for <span class="time" rel="'+locals.laststatuschange+'">'+t+'</span>';
+		}
+		if ( locals.acknowledged ){
+			//calculate time check has been acknowledge for
+			var atime = timeFormat(new Date().getTime() - (locals.acknowledgedtime*1000) );
+			locals.name += ' acknowledged for <span class="time" rel="'+locals.acknowledgedtime+'">'+atime+'</span>';
+		}
+		
 		locals.statusClass = ( locals.acknowledged ) ? 'acknowledged':locals.status;
 		locals.status = ( locals.acknowledged ) ? 'Acknowledged '+locals.status:locals.status;
+
 		var a = $( self.templates.list(locals) ).appendTo(li);
 		//set acknowledge click event
 		a.click(function(e){
 				e.preventDefault();
 				self.acknowledge( $(this).attr('id') );
-			});	
+			});
 		return li;
-	}
+	};
 	
+	//calculate time the check has been down
+	setInterval( function(){
+		self.dom.checkList.find('span.time').each(function(){
+			$(this).text( timeFormat( new Date().getTime() - ($(this).attr('rel')*1000) ) );
+		});
+	},1000);
+
 	this.renderMonitorStatus = function(status){
 		log('Rendering Monitor Status');
 		self.dom.monitorStatus.children().remove();
-		//render from template		
+		//render from template
 		self.dom.monitorStatus.append( self.templates.monitorStatus(status) );
-	}
+	};
 	this.acknowledge = function(id){
 		log('Acknowledging '+id);
 		self.socket.emit('acknowledge', id);
@@ -198,15 +220,15 @@ function Pingdom() {
 	this.socket.on('statusChange', function(data){
 		log('Status Change: '+data.id+' - '+data.hostname+' - '+data.status + ' - acknowledged: '+ data.acknowledged);
 		self.updateChecks();
-	});	
+	});
 	this.socket.on('monitorStatus', function(data){
 		log('Monitor Status Update');
 		self.renderMonitorStatus(data);
-	});	
+	});
 
 	//adjust status text size on window resize
 	$(window).resize(self.adjustSize);
-};
+}
 
 //copy an object
 function clone(obj) {
@@ -219,10 +241,15 @@ function clone(obj) {
 
 function log(msg){
 	debug = debug || false;
-	if( debug && typeof(console) == 'object'  ){
+	if( debug && typeof(console) == 'object' ){
 		if( typeof(msg) == 'string' ){
 			var d = new Date();
-			var timestamp = d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+			var timestamp = d.getDate().toString().padLeft(2,0) +
+							'-'+(d.getMonth()+1).toString().padLeft(2,0) +
+							'-'+d.getFullYear().toString().padLeft(2,0) +
+							' '+d.getHours().toString().padLeft(2,0) +
+							':'+d.getMinutes().toString().padLeft(2,0) +
+							':'+d.getSeconds().toString().padLeft(2,0);
 			console.log(timestamp+' - '+msg);
 		}else{
 			console.log(msg);
@@ -230,6 +257,41 @@ function log(msg){
 		
 	}
 }
+//js string functions are awful
+String.prototype.padLeft = function(num, chr){
+	var str = this.toString();
+	if( str.length >= num ){
+		return str;
+	}
+	for( i=num; i>=str.length; i-- ){
+		str = chr+str;
+	}
+	return str;
+};
+function timeDiff(t){
+	t = Math.floor(t / 1000);
+
+	var d = Math.floor( t / 86400 );
+	t = t % 86400;
+
+	var h = Math.floor( t / 3600 );
+	t = t % 3600;
+
+	var m = Math.floor( t / 60 );
+	t = t % 60;
+
+	return [d,h,m,t];
+}
+function timeFormat(t){
+	t = timeDiff(t);
+	var r = '';
+	if(t[0] > 0 ) r +=    t[0]+'d ';
+	if(t[1] > 0 ) r += ' '+t[1]+'h ';
+	if(t[2] > 0 ) r += ' '+t[2]+'m ';
+	r += t[3]+'s';
+	return r;
+}
+
 var kiosk;
 var debug = true;
 $(document).ready(function(){

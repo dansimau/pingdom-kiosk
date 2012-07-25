@@ -21,7 +21,7 @@ http.createServer(function (req, res) {
 		status[tmp] = 'down';
 		var tmp = Math.floor(Math.random()*5);
 		status[tmp] = 'down';		
-		c = 0;
+		//c = 0;
 	}
 		console.log(status);
 	
