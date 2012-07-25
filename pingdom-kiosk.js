@@ -94,16 +94,11 @@ io.sockets.on('connection', function (socket) {
 	
 	//return downstates
 	socket.on('getDownStates', function(data, fn){
-		monitor.getChecks(function(states){
-				fn(states);
-			}, 'down');
+		monitor.getChecks('down', fn);
 	});
-
 	//return upstates
 	socket.on('getUpStates', function(data, fn){
-		monitor.getChecks(function(states){
-				fn(states);
-			}, 'up');
+		monitor.getChecks('up', fn);
 	});
 	
 	//return checks
