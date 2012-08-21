@@ -8,7 +8,7 @@ function Pingdom() {
 	this.interval = 0;
 	//templates are bootstrapped into the initial html
 	this.templates = templates;
-	
+
 	//insert basic dom elements
 	$('body').text('').html('');
 	this.dom = {};
@@ -18,13 +18,13 @@ function Pingdom() {
 	this.dom.checkList 		= $('<ul id="checkList" class="hide"/>').appendTo(this.dom.app);
 	this.dom.monitorStatus 	= $('<div id="monitorStatus"/>').appendTo(this.dom.app);
 	this.dom.audio 			= $('<audio src="/beep.wav" preload />').appendTo(this.dom.app);
-	
+
 	this.maxFont = this.dom.status.css('font-size').match(/([0-9]+)px/)[1];
 	this.minFont = 60;
 
 	//connect websockets
 	this.socket = io.connect();
-	
+
 	this.socket.on('disconnect', function(){
 		self.dom.status.text('Connection Lost');
 		self.dom.body.addClass('disconnected');
@@ -47,11 +47,11 @@ function Pingdom() {
 				}
 			}, interval);
 		});
-		
+
 		//refresh when we (re)connect
 		self.updateChecks();
 	});
-	
+
 	//guess what this does!
 	this.updateChecks = function(){
 		log('Getting Updated Checks');
@@ -61,12 +61,12 @@ function Pingdom() {
 			self.render();
 		});
 	};
-	
+
 	//render the status + list of down checks
 	this.render = function(){
 		log('Rendering Display');
 		//log(self.downChecks)
-		
+
 		self.dom.body.removeClass('up down');
 		if( self.downChecks.length === 0 ){
 			//nothing is down :woop-woop:
@@ -167,11 +167,11 @@ function Pingdom() {
 		for (i = 0, l = self.acknowledgedChecks.length; i < l; i++) {
 			self._renderListCheck(self.acknowledgedChecks[i]).appendTo(self.dom.checkList);
 		}
-		
+
 	};
 	this._renderListCheck = function(check){
 		var li = $('<li/>');
-		
+
 		//render each list element from jade template
 		var locals = clone(check);
 
@@ -186,8 +186,8 @@ function Pingdom() {
 			var atime = timeFormat(new Date().getTime() - (locals.acknowledgedtime*1000) );
 			locals.name += ' acknowledged for <span class="time" rel="'+locals.acknowledgedtime+'">'+atime+'</span>';
 		}
-		
-		locals.statusClass = ( locals.acknowledged ) ? 'acknowledged':locals.status;
+
+		locals.statusClass = ( locals.acknowledged ) ? 'acknowledged_'+locals.status:locals.status;
 		locals.status = ( locals.acknowledged ) ? 'Acknowledged '+locals.status:locals.status;
 
 		var a = $( self.templates.list(locals) ).appendTo(li);
@@ -198,7 +198,7 @@ function Pingdom() {
 			});
 		return li;
 	};
-	
+
 	//calculate time the check has been down
 	setInterval( function(){
 		self.dom.checkList.find('span.time').each(function(){
@@ -254,7 +254,7 @@ function log(msg){
 		}else{
 			console.log(msg);
 		}
-		
+
 	}
 }
 //js string functions are awful

@@ -1,8 +1,8 @@
-/* http://meyerweb.com/eric/tools/css/reset/ 
+/* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
    License: none (public domain)
 */
-html, body, div, span, applet, object, iframe,h1, h2, h3, h4, h5, h6, p, blockquote, pre,a, abbr, acronym, address, big, cite, code,del, dfn, em, img, ins, kbd, q, s, samp,small, strike, strong, sub, sup, tt, var,b, u, i, center,dl, dt, dd, ol, ul, li,fieldset, form, label, legend,table, caption, tbody, tfoot, thead, tr, th, td,article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, enu, nav, output, ruby, section, summary,time, mark, audio, video 
+html, body, div, span, applet, object, iframe,h1, h2, h3, h4, h5, h6, p, blockquote, pre,a, abbr, acronym, address, big, cite, code,del, dfn, em, img, ins, kbd, q, s, samp,small, strike, strong, sub, sup, tt, var,b, u, i, center,dl, dt, dd, ol, ul, li,fieldset, form, label, legend,table, caption, tbody, tfoot, thead, tr, th, td,article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, enu, nav, output, ruby, section, summary,time, mark, audio, video
 {margin: 0;	padding: 0;	border: 0;	font-size: 100%; font: inherit;	vertical-align: baseline;}
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display: block;}
@@ -16,28 +16,28 @@ strong { font-weight: bold;}
 .round-tl, .round {
     -webkit-border-top-left-radius: 5px;
     -moz-border-radius-topleft: 5px;
-    border-top-left-radius: 5px;    
+    border-top-left-radius: 5px;
 }
 .round-tr, .round {
     -webkit-border-top-right-radius: 5px;
     -moz-border-radius-topright: 5px;
-    border-top-right-radius: 5px;    
+    border-top-right-radius: 5px;
 }
 .round-bl, .round {
     -webkit-border-bottom-left-radius: 5px;
     -moz-border-radius-bottomleft: 5px;
-    border-bottom-left-radius: 5px;    
+    border-bottom-left-radius: 5px;
 }
 .round-br, .round {
     -webkit-border-bottom-right-radius: 5px;
     -moz-border-radius-bottomright: 5px;
-    border-bottom-right-radius: 5px;    
+    border-bottom-right-radius: 5px;
 }
 /* shadow helper classes*/
 .shadow {
     -moz-box-shadow: 0 0 10px 2px #343434;
     -webkit-box-shadow: 0 0 10px 2px #343434;
-    box-shadow: 0 0 10px 2px #343434;        
+    box-shadow: 0 0 10px 2px #343434;
 }
 .shadow.hover, .shadow:hover:not(.nohover){
     -moz-box-shadow: 0 0 10px 2px #343434;
@@ -53,7 +53,7 @@ strong { font-weight: bold;}
 .center { text-align: center;}
 .noborder{ border: 0 !important;}
 .capitalise { text-transform: capitalize; }
-.uppercase {text-transform: uppercase;} 
+.uppercase {text-transform: uppercase;}
 .fade { -webkit-transition: opacity 0.5s ease;}
 .translucent{ opacity: 0.2;}
 .hide{ display: none;}
@@ -81,7 +81,8 @@ span.label{ width: 125px; float: left; font-weight: bold; padding-right: 5px;}
 ul#checkList { list-style-type: none; margin: auto; padding: 10px; }
 ul#checkList li a{ padding: 3px; border-bottom: 2px solid black; color: black; display: block;}
 ul#checkList li span.state  { width: 170px; overflow: hidden; }
-ul#checkList li a.acknowledged { background-color: yellow;}
+ul#checkList li a.acknowledgeddown { background-color: orange;}
+ul#checkList li a.acknowledgedup { background-color: yellow;}
 ul#checkList li a.up { background-color: transparent; border-bottom-color: #5F9900;}
 ul#checkList li a.down {font-weight: bold; font-size: 105%;}
 
