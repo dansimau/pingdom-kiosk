@@ -81,8 +81,8 @@ span.label{ width: 125px; float: left; font-weight: bold; padding-right: 5px;}
 ul#checkList { list-style-type: none; margin: auto; padding: 10px; }
 ul#checkList li a{ padding: 3px; border-bottom: 2px solid black; color: black; display: block;}
 ul#checkList li span.state  { width: 170px; overflow: hidden; }
-ul#checkList li a.acknowledgeddown { background-color: orange;}
-ul#checkList li a.acknowledgedup { background-color: yellow;}
+ul#checkList li a.acknowledged_down { background-color: orange;}
+ul#checkList li a.acknowledged_up { background-color: yellow;}
 ul#checkList li a.up { background-color: transparent; border-bottom-color: #5F9900;}
 ul#checkList li a.down {font-weight: bold; font-size: 105%;}
 
