@@ -12,7 +12,7 @@ connect
 cookie
 cookie-signature
 debug
-express
+express version 2.x
 fresh
 jade
 methods
