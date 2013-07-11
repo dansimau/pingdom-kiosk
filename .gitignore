@@ -1,3 +1,4 @@
 kiosk-server.conf
 tools/pingdom-call-api.js
 tools/monitor-console.js
+node_modules/
