@@ -11,10 +11,10 @@ if (!conf) {
 
 // Determine API server config
 var api = conf.pingdom.apiserver || {
-	"host": "",
-	"port": "",
-	"protocol": "",
-	"pollfreq": ""
+        "host": "api.pingdom.com",
+        "port": "443",
+        "protocol": "https",
+        "pollfreq": ""
 };
 
 // Create pingdom API connectors
@@ -33,4 +33,8 @@ var monitor = pingdom.createMonitor(connectors);
 // Subscribe to the status change event
 monitor.addListener('statusChange', function(data) {
 	console.log("OMG! Something happened!");
+});
+
+monitor.getChecks('down', function(checks) {
+	console.log(checks);
 });
