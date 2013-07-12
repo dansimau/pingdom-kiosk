@@ -1,0 +1,53 @@
+
+== Installing ==
+Pingdom Kiosk requires node.js, available at http://nodejs.org/download/ or via
+your distributors software channels.
+
+Additional node.js dependencies are required to run Pingdom Kiosk. At the time
+of writing they are:
+buffer-crc32
+bytes
+connect
+cookie
+cookie-signature
+debug
+express
+fresh
+jade
+methods
+pause
+range-parser
+send
+socket.io
+socket.io-client
+
+You will also need to copy node-launcher from contrib/ into /usr/local/bin/,
+either link or install node to /usr/local/bin/ and put Pingdom Kiosk in
+/opt/pingdom-kiosk if you want to avoid making any manual changes to the init
+script.
+
+== Configuration ==
+The configuration file must be added at [pingdom kiosk root]/kiosk-server.conf.
+An example file called kiosk-server.conf.dist is provided in this package.
+name, username, password and app_key are required, exclude[] and include[] are
+both optional.
+
+include[] and exclude[] are comma separated entries which can be spread over
+multiple lines. Eg:
+				"include": [],
+				"exclude": [
+				serverone,
+				servertwo,
+				serverthree
+				]
+
+== Running ==
+Below is an example run of pingdom kiosk outside the init script.
+
+sudo ./contrib/node-launcher --no-detach --pidfile=/var/run/pingdom-kiosk.pid --logfile=/var/log/pingdom-kiosk.log /usr/local/bin/node ./pingdom-kiosk.js
+
+Running with the init script should be as easy as
+sudo ./contrib/init start
+
+The kiosk will start on http://0.0.0.0:3000 by default so should be easily accessible at http://127.0.0.1:3000/
+

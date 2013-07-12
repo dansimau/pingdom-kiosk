@@ -7,13 +7,13 @@
 #
 
 # Pretty name for service
-NAME="Node.js my app"
+NAME="Pingdom Kiosk"
 
 # Unique service name
-DAEMON_NAME="node-my-app"
+DAEMON_NAME="pingdom-kiosk"
 
 # Path to node and server.js file of app
-DAEMON_ARGS="/usr/local/bin/node /opt/node-my-app/server.js"
+DAEMON_ARGS="/usr/local/bin/node /opt/pingdom-kiosk/pingdom-kiosk.js"
 
 DAEMON_USER="root"
 DAEMON_BIN="/usr/local/bin/node-launcher"
