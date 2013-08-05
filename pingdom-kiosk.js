@@ -1,4 +1,5 @@
 var express = require('express'),
+	http = require('http'),
 	io = require('socket.io');
 
 var pingdom = require("./lib/pingdom.js");
@@ -35,7 +36,8 @@ for (var i = 0, l = conf.pingdom.accounts.length; i < l; i++) {
 var monitor = pingdom.createMonitor(connectors);
 
 //setup http server
-var app = module.exports = express.createServer();
+var app = express();
+var httpserver = http.createServer(app);
 
 //configure express
 app.configure(function(){
@@ -58,7 +60,7 @@ app.get('/', function(req, res){
 });
 
 //websockets (fuckyeah)
-io = io.listen(app);
+io = io.listen(httpserver);
 io.configure(function(){
 	//io.set('transports', ['websocket']);
 	io.set('log level', 1);
@@ -91,7 +93,7 @@ monitor.addListener('connectorUp', function(data) {
 io.sockets.on('connection', function (socket) {
 	//send status to new clients
 	sendMonitorStatusUpdate(socket);
-	
+
 	//return downstates
 	socket.on('getDownStates', function(data, fn){
 		monitor.getChecks('down', fn);
@@ -100,7 +102,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('getUpStates', function(data, fn){
 		monitor.getChecks('up', fn);
 	});
-	
+
 	//return checks
 	socket.on('getStates', function(data, fn){
 		if( typeof(data) == 'string' ){
@@ -128,7 +130,7 @@ io.sockets.on('connection', function (socket) {
 			doStuff(data[j]);
 		}
 	});
-	
+
 	//acknowledge a downcheck
 	socket.on('acknowledge', function(data){
 		monitor.acknowledge(data, function(check){
@@ -146,5 +148,4 @@ setInterval(function(){
 }, interval);
 
 //start webserver
-app.listen(3000);
-
+httpserver.listen(3000);
