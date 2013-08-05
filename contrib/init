@@ -1,0 +1,86 @@
+#!/bin/bash
+#
+# Node.js app
+#
+# chkconfig: 345 90 10
+# description: Node.js app
+#
+
+# Pretty name for service
+NAME="Pingdom Kiosk"
+
+# Unique service name
+DAEMON_NAME="pingdom-kiosk"
+
+# Path to node and server.js file of app
+DAEMON_ARGS="/usr/local/bin/node /opt/pingdom-kiosk/pingdom-kiosk.js"
+
+DAEMON_USER="root"
+DAEMON_BIN="/usr/local/bin/node-launcher"
+DAEMON_LOGFILE="/var/log/$DAEMON_NAME.log"
+DAEMON_PIDFILE="/var/run/$DAEMON_NAME.pid"
+
+# Source function library
+. /etc/init.d/functions
+
+RETVAL=0
+
+start() {
+
+	echo -n $"Starting $NAME: " 
+
+	touch $DAEMON_PIDFILE $DAEMON_LOGFILE
+	chown nobody:nobody $DAEMON_PIDFILE $DAEMON_LOGFILE
+
+	daemon --user=$DAEMON_USER --pidfile=$DAEMON_PIDFILE $DAEMON_BIN --pidfile=$DAEMON_PIDFILE --logfile=$DAEMON_LOGFILE $DAEMON_ARGS &>/dev/null
+	sleep 1
+
+	status -p $DAEMON_PIDFILE $DAEMON_BIN &>/dev/null
+	RETVAL=$?
+
+	if [ $RETVAL -eq 0 ]; then
+		success
+		touch /var/lock/subsys/$DAEMON_NAME
+	else
+		failure
+	fi
+	echo
+	return $RETVAL
+}
+
+stop() {
+	echo -n $"Stopping $NAME: " 
+	killproc -p $DAEMON_PIDFILE $DAEMON_BIN
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$DAEMON_NAME
+	return $RETVAL
+}	
+
+restart() {
+	stop
+	start
+}	
+
+case "$1" in
+  start)
+	  start
+	;;
+  stop)
+	  stop
+	;;
+  status)
+	status -p $DAEMON_PIDFILE $DAEMON_BIN
+	;;
+  restart)
+	  restart
+	;;
+  condrestart)
+	  [ -f /var/lock/subsys/$DAEMON_NAME ] && restart || :
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|status|restart|condrestart}" 
+	exit 1
+esac
+
+exit $?

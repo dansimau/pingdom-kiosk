@@ -1,0 +1,95 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+html, body, div, span, applet, object, iframe,h1, h2, h3, h4, h5, h6, p, blockquote, pre,a, abbr, acronym, address, big, cite, code,del, dfn, em, img, ins, kbd, q, s, samp,small, strike, strong, sub, sup, tt, var,b, u, i, center,dl, dt, dd, ol, ul, li,fieldset, form, label, legend,table, caption, tbody, tfoot, thead, tr, th, td,article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, enu, nav, output, ruby, section, summary,time, mark, audio, video
+{margin: 0;	padding: 0;	border: 0;	font-size: 100%; font: inherit;	vertical-align: baseline;}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display: block;}
+body {line-height: 1;}
+ol, ul {list-style: none;}
+blockquote, q {quotes: none;}
+blockquote:before, blockquote:after,q:before, q:after {	content: ''; content: none;}
+table {	border-collapse: collapse;border-spacing: 0;}
+strong { font-weight: bold;}
+/* round corner helper classes */
+.round-tl, .round {
+    -webkit-border-top-left-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    border-top-left-radius: 5px;
+}
+.round-tr, .round {
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topright: 5px;
+    border-top-right-radius: 5px;
+}
+.round-bl, .round {
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    border-bottom-left-radius: 5px;
+}
+.round-br, .round {
+    -webkit-border-bottom-right-radius: 5px;
+    -moz-border-radius-bottomright: 5px;
+    border-bottom-right-radius: 5px;
+}
+/* shadow helper classes*/
+.shadow {
+    -moz-box-shadow: 0 0 10px 2px #343434;
+    -webkit-box-shadow: 0 0 10px 2px #343434;
+    box-shadow: 0 0 10px 2px #343434;
+}
+.shadow.hover, .shadow:hover:not(.nohover){
+    -moz-box-shadow: 0 0 10px 2px #343434;
+    -webkit-box-shadow: 0 0 10px 2px #343434;
+    box-shadow: 0 0 10px 2px #cccccc;
+}
+.tshadow {text-shadow: 2px 2px 2px #aaa; }
+
+/* morehelper classes */
+.left { float: left;}
+.right { float: right;}
+.clear { clear: both;}
+.center { text-align: center;}
+.noborder{ border: 0 !important;}
+.capitalise { text-transform: capitalize; }
+.uppercase {text-transform: uppercase;}
+.fade { -webkit-transition: opacity 0.5s ease;}
+.translucent{ opacity: 0.2;}
+.hide{ display: none;}
+#overlay{ z-index: 10; position: fixed; top:0; left: 0; width: 100%; height: 100%; background-color: black; opacity: 0.93;}
+#overlay > * {z-index: 11;}
+
+/* basic stuff */
+body {  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;}
+
+a {color: #00A08A; text-decoration: none;}
+a:hover{ color: #34D0BA;}
+
+/*app styles */
+div#app { margin-top: 20px; height: 100%; width: 100%;}
+div#app h1 { margin-bottom: 0.5em; font-weight: bold; font-size: 2em;}
+div#app h1#status { margin: auto; font-weight: bold; font-size: 168px; text-align: center; overflow: hidden;}
+
+.down{ background-color: #BF3030;}
+.ignored{ background-color: yellow;}
+.up { background-color: #5F9900;}
+.disconnected { background-color: grey; }
+span.label{ width: 125px; float: left; font-weight: bold; padding-right: 5px;}
+
+/* check list styles */
+ul#checkList { list-style-type: none; margin: auto; padding: 10px; }
+ul#checkList li a{ padding: 3px; border-bottom: 2px solid black; color: black; display: block;}
+ul#checkList li span.state  { width: 170px; overflow: hidden; }
+ul#checkList li a.acknowledged_down { background-color: orange;}
+ul#checkList li a.acknowledged_up { background-color: yellow;}
+ul#checkList li a.up { background-color: transparent; border-bottom-color: #5F9900;}
+ul#checkList li a.down {font-weight: bold; font-size: 105%;}
+
+div#monitorStatus { padding: 10px;}
+div#monitorStatus li {  padding: 2px;}
+div#monitorStatus li.head { font-weight: bold; margin-top: 5px;}
+div#monitorStatus ul { margin-left: 15px;}
+
+
+
