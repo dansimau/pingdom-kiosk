@@ -46,7 +46,6 @@ Its probably a good idea to proxy connections to node through nginx.
 nginx >1.4.0 is required to support proxying of WebSocket connections.
 The below is a config snippet that should allow you to serve static files via nginx and proxy everything else through to node.
 ```
-root@ops:/opt/pingdom-test# vim /etc/openresty/conf.d/pingdom-kiosk.conf
 map $http_upgrade $connection_upgrade {
         default upgrade;
         ''      close;
