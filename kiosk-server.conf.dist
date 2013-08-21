@@ -6,6 +6,7 @@
 				"username": "",
 				"password": "",
 				"app_key": "",
+				"allowed_contacts": [],
 				"include": [],
 				"exclude": []
 			}
