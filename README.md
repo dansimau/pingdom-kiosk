@@ -18,17 +18,31 @@ script.
 The configuration file must be added at [pingdom kiosk root]/kiosk-server.conf.
 This file is JSON *not* a JavaScript object literal, that means no single quotes etc.
 An example file called kiosk-server.conf.dist is provided in this package.
-name, username, password and app_key are required, exclude[] and include[] are
-both optional.
+name, username, password and app_key are required, exclude[], include[] and allowed_contacts[] are
+all optional.
 
 include[] and exclude[] are comma separated entries which can be spread over
-multiple lines. Eg:
-				"include": [],
-				"exclude": [
-				serverone,
-				servertwo,
-				serverthree
-				]
+multiple lines.
+```json
+	"include": [],
+	"exclude": [
+		"serverone",
+		"servertwo",
+		"serverthree"
+	]
+```
+
+allowed_contacts is an array of pingdom contact *names*.
+Names are the only required attribute for contacts so we can't reliably use anything else.
+Any check that is configured to send notifications to any of the defined contacts will be included.
+
+```json
+   "allowed_contacts":[
+        "Dave",
+        "Alice",
+        "Bob"
+   ]
+```
 
 # Running
 Below is an example run of pingdom kiosk outside the init script.
