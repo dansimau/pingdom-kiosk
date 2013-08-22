@@ -1,15 +1,15 @@
 {
-	"pingdom": {
-		"accounts": [
-			{
-				"name":"",
-				"username": "",
-				"password": "",
-				"app_key": "",
-				"allowed_contacts": [],
-				"include": [],
-				"exclude": []
-			}
-		]
-	}
+    "pingdom": {
+        "accounts": [
+            {
+                "name":"",
+                "username": "",
+                "password": "",
+                "app_key": "",
+                "allowed_contacts": [],
+                "include": [],
+                "exclude": []
+            }
+        ]
+    }
 }
