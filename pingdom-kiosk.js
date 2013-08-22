@@ -105,7 +105,7 @@ io.sockets.on('connection', function (socket) {
 
     //return checks
     socket.on('getStates', function(data, fn){
-        if( typeof(data) == 'string' ){
+        if (typeof(data) == 'string') {
             monitor.getChecks(data, fn);
             return;
         }
