@@ -19,7 +19,7 @@ function Pingdom() {
 	this.dom.monitorStatus 	= $('<div id="monitorStatus"/>').appendTo(this.dom.app);
 	this.dom.audio 			= $('<audio src="/beep.wav" preload />').appendTo(this.dom.app);
 
-	this.maxFont = this.dom.status.css('font-size').match(/([0-9]+)px/)[1];
+	this.maxFont = (matches = this.dom.status.css('font-size').match(/([0-9]+)px/)) ? matches[1] : 120;
 	this.minFont = 60;
 
 	//connect websockets
@@ -294,6 +294,3 @@ function timeFormat(t){
 
 var kiosk;
 var debug = true;
-$(document).ready(function(){
-	kiosk = new Pingdom();
-});
