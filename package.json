@@ -6,6 +6,8 @@
   "dependencies": {
     "express": "~3.3",
     "socket.io": "~0.9",
-    "jade": "~0.34"
+    "jade": "~0.34",
+    "jsdom": "~1",
+    "socket.io-client": "~0.9"
   }
 }
